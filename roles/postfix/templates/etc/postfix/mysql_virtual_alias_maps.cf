@@ -1,0 +1,5 @@
+user = mailman
+password = {{vault_db_sql_mailman_pass}}
+hosts = {{postfix_mysql_host}}
+dbname = postfix
+query = select al_target from aliases natural join domains where al_enabled=1 and dom_enabled=1 and al_user='%u' and dom_name='%d'

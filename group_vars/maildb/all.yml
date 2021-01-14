@@ -1,0 +1,19 @@
+---
+mysql_server_root_password: "{{ vault_mysql_root_password }}"
+mysql_server_server_id: "{{inventory_hostname_short.split('-') | last | int}}"
+
+mysql_server_users:
+  - name: mailman
+    pass: "{{vault_db_sql_mailman_pass}}"
+    priv: "postfix.*:select/postfix.spam_autolearn_queue:insert,delete,select"
+    host: "10.1.1.%"
+  - name: roundcube
+    pass: "{{vault_db_sql_roundcube_pass}}"
+    priv: "roundcube.*:ALL"
+    host: "10.1.1.%"
+
+mysql_server_schemas:
+  - name: "postfix"
+    replicate: yes
+  - name: "roundcube"
+    replicate: yes

@@ -1,0 +1,38 @@
+---
+postfix_mysql_host: "vps-maildb-01.prg01.ta-internal.net"
+postfix_mailname: "services.tryadmins.cz"
+postfix_smtpd_sasl_path: "inet:vps-imap-01.prg01.ta-internal.net:12345"
+postfix_virtual_transport: "lmtp:vps-imap-01.prg01.ta-internal.net:24"
+
+opendkim_keys:
+  - domain: "tryadmins.cz"
+    short: "tryadminscz"
+    selector: "201905"
+    private_key: "{{ vault_dkim_private_key_tryadmins_cz }}"
+  - domain: "webeo.cz"
+    short: "webeocz"
+    selector: "201905"
+    private_key: "{{ vault_dkim_private_key_webeo_cz }}"
+  - domain: "vodnice4u.cz"
+    short: "vodnice4ucz"
+    selector: "201905"
+    private_key:  "{{ vault_dkim_private_key_vodnice4u_cz }}"
+  - domain: "skolniajtak.cz"
+    short: "skolniajtakcz"
+    selector: "201905"
+    private_key: "{{ vault_dkim_private_key_skolniajtak_cz }}"
+  - domain: "sorosvladcesveta.cz"
+    short: "sorosvladcesvetacz"
+    selector: "201905"
+    private_key: "{{ vault_dkim_private_key_sorosvladcesveta_cz }}"
+
+opendkim_trusted_hosts:
+  - "127.0.0.1"
+  - "::1"
+  - "localhost"
+  - "vps-smtp-01"
+  - "vps-smtp-01.prg01.ta-internal.net"
+  - "ta-internal.net"
+  - "10.1.1.0/24"
+
+opendkim_use_with_postfix: true

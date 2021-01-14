@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: nginx
+    nginx_use_default_vhost: False
+

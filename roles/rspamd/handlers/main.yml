@@ -1,0 +1,3 @@
+---
+- name: restart rspamd service
+  service: name=rspamd state=restarted

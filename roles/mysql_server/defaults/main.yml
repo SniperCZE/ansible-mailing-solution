@@ -1,0 +1,142 @@
+---
+################################################################################
+## Generally known MySQL options
+
+mysql_server_root_password: "Passw0rd"
+
+## only applicable value is mariadb104
+mysql_server_version: "mariadb104"
+
+## possible values 'all', 'explicit', 'ignore'
+mysql_server_replication_mode: "all"
+
+mysql_server_schemas: []
+  #- name: "schema1"
+    #replicate: yes
+  #- name: "schema2"
+    #replicate: no
+
+mysql_server_users: []
+  #- name: foo
+    #pass: bar
+    #priv: "*.*:ALL"
+    #host: "localhost"
+
+## topology definition `slave`: `list of masters`
+mysql_server_repl_slave_of: {}
+  #master1: [master2]
+  #master2: [master1]
+  #slave1: [master1]
+  #slave2: [master2]
+
+## list of all master nodes
+mysql_server_repl_masters: "{{mysql_server_repl_slave_of.values() | sum(start=[]) | unique}}"
+
+## primary master node, node where databases will be created
+mysql_server_repl_primary_master: "{% if mysql_server_repl_masters | length > 0 %}{{mysql_server_repl_masters | sort | first}}{% else %}{{[]}}{% endif %}"
+
+mysql_server_master_connect_retry: 10
+
+## mysql extra configuration that will be saved into mysql/conf.d
+## it is dict of dicts, first level contains ini groups
+## and second variable=value pairs
+##
+## Example:
+##  mysql_server_confd:
+##    "mysqld":
+##      "syslog": ""
+##      "user": "mysql"
+
+mysql_server_confd: {}
+
+mysql_server_default_character_set: "utf8"
+mysql_server_port: 3306
+mysql_server_bind_address: "0.0.0.0"
+mysql_server_max_connections: 151
+mysql_server_max_allowed_packet: "4M"
+
+mysql_server_wait_timeout: 28800
+mysql_server_interactive_timeout: 28800
+
+mysql_server_key_buffer_size: "8M"
+
+mysql_server_thread_stack: "256K"
+mysql_server_thread_cache_size: -1
+
+mysql_server_read_buffer_size: "128K"
+mysql_server_sort_buffer_size: "256K"
+mysql_server_join_buffer_size: "256K"
+
+mysql_server_table_open_cache: 2000
+mysql_server_table_open_cache_instances: 16
+mysql_server_thread_concurrency: 10
+
+mysql_server_tmp_table_size: "16M"
+mysql_server_max_heap_table_size: "16M"
+
+mysql_server_character_set_server: "utf8"
+mysql_server_collation_server: "utf8_unicode_ci"
+
+mysql_server_query_cache_type: 0
+mysql_server_query_cache_limit: "1M"
+mysql_server_query_cache_size: "1M"
+
+## possible values UTC, SYSTEM
+mysql_server_log_timestamps: UTC
+
+mysql_server_general_log: 0
+mysql_server_general_log_file: "/var/log/mysql/mysql.log"
+
+mysql_server_slow_query_log: 0
+mysql_server_slow_query_log_file: "/var/log/mysql/mysql-slow.log"
+mysql_server_long_query_time: 10
+mysql_server_log_slow_admin_statements: 0
+mysql_server_log_slow_slave_statements: 0
+mysql_server_log_slow_verbosity: "query_plan"
+mysql_server_log_queries_not_using_indexes: 0
+
+mysql_server_log_syslog: 0
+mysql_server_log_syslog_facility: "daemon"
+mysql_server_log_syslog_include_pid: 1
+
+## possible values ROW, STATEMENT, MIXED
+mysql_server_binlog_format: "MIXED"
+
+mysql_server_server_id: 1
+mysql_server_log_bin: "/var/log/mysql/mysql-bin.log"
+mysql_server_expire_logs_days: 10
+mysql_server_max_binlog_size: "100M"
+mysql_server_log_slave_updates: 0
+
+mysql_server_auto_increment_increment: 1
+mysql_server_auto_increment_offset: 1
+mysql_server_innodb_autoinc_lock_mode: 1
+
+mysql_server_innodb_buffer_pool_size: "1G"
+mysql_server_innodb_buffer_pool_instances: 1
+mysql_server_innodb_io_capacity: 200
+mysql_server_innodb_data_file_path: "ibdata1:12M:autoextend"
+mysql_server_innodb_autoextend_increment: "64M"
+mysql_server_innodb_log_buffer_size: "16M"
+mysql_server_innodb_log_file_size: "256M"
+mysql_server_innodb_flush_method: "O_DIRECT"
+mysql_server_innodb_flush_log_at_trx_commit: 1
+mysql_server_innodb_lock_wait_timeout: 60
+mysql_server_innodb_file_per_table: 1
+mysql_server_innodb_doublewrite: 1
+
+mysql_server_event_scheduler_enabled: false
+
+## operational setting to skip MySQL restart on running database
+mysql_server_DO_NOT_RESTART: False
+
+## Galera configuration
+mysql_use_galera: False
+galera_wsrep_provider: "/usr/lib/galera/libgalera_smm.so"
+galera_wsrep_cluster_name: "galera_cluster"
+galera_wsrep_sst_method: "rsync"
+galera_first_node: ""
+
+galera_packages:
+  - "rsync"
+  - "galera-3"

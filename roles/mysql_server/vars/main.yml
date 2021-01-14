@@ -1,0 +1,18 @@
+---
+## path to MySQL configuration for Ansible modules
+mysql_server_ansible_config: "/etc/mysql/ansible.cnf"
+
+## mappings for installation of specific MySQL versions
+mysql_server_mappings:
+  mariadb104:
+    apt:
+      key_id: "C74CD1D8"
+      sources_lists:
+        - "mariadb104.list"
+    config_template: "mariadb102.cnf"
+    packages:
+      - "python-mysqldb"
+      - "mariadb-server"
+    confd_client: "conf.d"
+    confd_server: "conf.d"
+    flavor: "mariadb"

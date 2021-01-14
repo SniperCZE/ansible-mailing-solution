@@ -1,0 +1,5 @@
+user = mailman
+password = {{vault_db_sql_mailman_pass}}
+hosts = {{postfix_mysql_host}}
+dbname = postfix
+query = select concat(dom_name, '/', mb_user, '/') from mailboxes natural join domains where mb_enabled=1 and dom_enabled=1 and mb_user='%u' and dom_name='%d'

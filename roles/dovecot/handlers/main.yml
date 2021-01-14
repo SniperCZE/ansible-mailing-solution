@@ -1,0 +1,8 @@
+---
+- name: restart dovecot service
+  service: name=dovecot state=restarted
+
+- name: compile sieves
+  shell: for skript in *.sieve; do sudo -u mail sievec $skript; done
+  args:
+    chdir: /etc/dovecot/sieve

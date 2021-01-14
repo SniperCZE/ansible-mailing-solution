@@ -1,0 +1,6 @@
+---
+################################################################################
+## Generally known MySQL options
+
+## only supported version is mariadb 10.4
+mysql_client_version: "mariadb104"

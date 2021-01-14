@@ -1,0 +1,4 @@
+---
+dependencies:
+  - fail2ban_redis_publisher
+  - fail2ban.ext

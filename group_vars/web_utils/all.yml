@@ -1,0 +1,20 @@
+---
+zabbix_web_db_user: "zabbix"
+zabbix_web_db_pass: "{{ vault_db_sql_zabbix_pass }}"
+zabbix_web_db_host: "vps-zabbix"
+
+roundcube_db_dsnw: "mysql://roundcube:{{vault_db_sql_roundcube_pass}}@vps-maildb-01.prg01.ta-internal.net/roundcube"
+roundcube_imap_host: "vps-imap-01.prg01.ta-internal.net"
+roundcube_smtp_host: "vps-smtp-01.prg01.ta-internal.net"
+roundcube_smtp_port: 25
+roundcube_support_url: ""
+roundcube_product_name: "TryAdmins webmail"
+roundcube_des_key: "hzT+:Sq4+_rXgFzD"
+roundcube_plugins:
+  - 'archive'
+  - 'zipdownload'
+  - 'password'
+
+php_ini_upload_max_filesize: "16M"
+php_ini_post_max_size: "32M"
+nginx_client_max_body_size: "32m"

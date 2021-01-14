@@ -1,0 +1,48 @@
+---
+- name: setup external repository
+  template: src="etc/apt/sources.list.d/{{item}}" dest="/etc/apt/sources.list.d/{{item}}" owner=root group=root mode=0644
+  with_items: "{{external_repository_tpls}}"
+  when: external_repository_tpls is defined and external_repository_tpls != ""
+  register: external_repo_install
+
+## download signing key as file from URL
+- name: trust to repository signing key from url
+  apt_key: url="{{external_repository_key_url}}" state=present
+  when:
+    - external_repository_key_url is defined
+    - external_repository_key_url is not none
+    - external_repository_key_url != ""
+  register: external_repo_trust
+
+## download signingkey from key server
+- name: trust to repository signing key from keyserver
+  apt_key: id="{{external_repository_key_id}}" keyserver="{{external_repository_key_server}}" state=present
+  when:
+    - external_repository_key_server is defined
+    - external_repository_key_server is not none
+    - external_repository_key_server != ""
+  register: external_repo_trust
+
+## use signingkey from file
+- name: trust to repository signing key from file
+  apt_key: data="{{ lookup('file', external_repository_key_path) }}" state=present
+  register: external_repo_trust
+  when:
+    - external_repository_key_path is defined
+    - external_repository_key_path is not none
+    - external_repository_key_path != ""
+
+- name: update APT cache
+  apt: update_cache=yes
+  when: external_repo_install is changed or external_repo_trust is changed
+
+- name: remove conflict packages
+  apt: name="{{conflict_packages}}" state=absent
+  when: 
+    - conflict_packages is defined
+    - conflict_packages != ""
+    - conflict_packages is not none
+
+- name: install external packages
+  apt: name="{{external_packages}}" state=present install_recommends={{external_packages_recommends}}
+  when: external_packages is defined and external_packages != ""

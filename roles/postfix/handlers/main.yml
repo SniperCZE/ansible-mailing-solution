@@ -1,0 +1,3 @@
+---
+- name: restart postfix service
+  service: name=postfix state=restarted

@@ -1,0 +1,195 @@
+---
+- name: configure mysql client
+  template: src="etc/mysql/{{item}}" dest="/etc/mysql/{{mysql_server_mappings[mysql_server_version].confd_client}}/{{item}}" owner=root group=root mode=0644
+  with_items:
+    - "mysql.cnf"
+    - "mysqldump.cnf"
+
+- name: configure mysql service
+  template: src="etc/mysql/{{mysql_server_mappings[mysql_server_version].config_template}}" dest="/etc/mysql/{{mysql_server_mappings[mysql_server_version].confd_server}}/mysqld.cnf" owner=root group=root mode=0644
+  notify: restart mysql service
+
+- block:
+
+  - name: configure galera replication
+    template: src="etc/mysql/galera.cnf" dest="/etc/mysql/conf.d/galera.cnf" owner=root group=root mode=0644
+    notify: restart mysql service
+
+  - name: install galera addons
+    apt: name="{{ galera_packages }}" state=present
+
+  when: mysql_use_galera
+
+## if ansible.cnf is missing this role is applied for first time
+- name: check ansible.cnf
+  stat: path="{{mysql_server_ansible_config}}"
+  register: mysql_server_ansible_config_stat
+
+# galera first start ----------------------------------------------------------
+
+- block:
+
+  - name: Stop all nodes
+    service: name=mysql state=stopped
+
+  - name: Start First galera node
+    shell: "galera_new_cluster"
+    when: inventory_hostname == galera_first_node
+
+  - name: wait for mysql service
+    wait_for: port=3306
+    when: inventory_hostname == galera_first_node
+
+  - name: Start all nodes
+    service: name=mysql state=started
+
+  - name: wait for mysql service
+    wait_for: port=3306
+
+  when: 
+    - mysql_use_galera
+    - mysql_server_ansible_config_stat.stat.exists == False
+
+# /galera first start ----------------------------------------------------------
+
+# secure -----------------------------------------------------------------------
+- block:
+  - name: set mysql root password for host root account
+    mysql_user:
+      name=root
+      host="{{ansible_hostname}}"
+      password="{{mysql_server_root_password}}"
+      state=present
+      sql_log_bin=no
+    no_log: True
+    when: ansible_hostname != 'localhost'
+
+  - name: set mysql root password for localhost root accounts
+    mysql_user:
+      name=root
+      host="{{item}}"
+      password="{{mysql_server_root_password}}"
+      state=present
+      sql_log_bin=no
+    with_items:
+      - "127.0.0.1"
+      - "::1"
+      - "localhost"
+    no_log: True
+    run_once: "{{ mysql_use_galera }}"
+
+  when: mysql_server_ansible_config_stat.stat.exists == False
+
+## restart MySQL after first reconfiguration
+- block:
+  - name: force restart mysql service after fresh installation
+    service: name=mysql state=restarted
+
+  - name: wait for mysql service
+    wait_for: port=3306
+
+  when: 
+    - mysql_server_ansible_config_stat.stat.exists == False
+    - mysql_use_galera == False
+
+- name: setup credentials for ansible
+  template: src="etc/mysql/ansible.cnf" dest="{{mysql_server_ansible_config}}" owner=root group=root mode=0600
+
+- name: ensure anonymous users are not in the database
+  mysql_user:
+    config_file="{{mysql_server_ansible_config}}"
+    name=""
+    host="{{item}}"
+    state=absent
+    sql_log_bin=no
+  with_items:
+   - localhost
+   - "{{ansible_hostname}}"
+# /secure ----------------------------------------------------------------------
+
+- name: debug mysql_server_users
+  debug:
+    verbosity: 2
+    msg: "defined={{mysql_server_users is defined}}; iterable={{mysql_server_users is iterable}}"
+
+- name: create user accounts
+  mysql_user:
+    config_file="{{mysql_server_ansible_config}}"
+    name="{{item.name}}"
+    password="{{item.pass | default('foobar')}}"
+    priv="{{item.priv | default('')}}"
+    state=present
+    host="{{item.host | default('localhost')}}"
+    sql_log_bin=no
+  with_items:
+    - "{{mysql_server_users}}"
+#  no_log: True
+  run_once: "{{ mysql_use_galera }}"
+  when: mysql_server_users is defined and mysql_server_users is iterable
+
+- name: remove the test database
+  mysql_db: 
+    config_file="{{mysql_server_ansible_config}}"
+    name=test
+    state=absent
+  when:
+    - inventory_hostname not in mysql_server_repl_slave_of or inventory_hostname == mysql_server_repl_primary_master
+
+- name: create databases on master
+  mysql_db: config_file="{{mysql_server_ansible_config}}" name="{{item.name}}" state=present
+  with_items: "{{mysql_server_schemas}}"
+  when:
+    - mysql_server_schemas is defined and mysql_server_schemas is iterable
+    - inventory_hostname not in mysql_server_repl_slave_of or inventory_hostname == mysql_server_repl_primary_master
+
+- name: enable event_scheduler
+  command: mysql --defaults-extra-file={{mysql_server_ansible_config}} -Ns -e "SET GLOBAL event_scheduler = ON;"
+  when:
+    - mysql_server_event_scheduler_enabled
+
+# replication ------------------------------------------------------------------
+
+- block:
+  - name: get replication user
+    set_fact: mysql_server_repl_user="{{mysql_server_users | selectattr('priv', 'search', '(REPLICATION|replication) (SLAVE|slave)') | first}}"
+
+  - name: stop replication
+    mysql_replication:
+      config_file="{{mysql_server_ansible_config}}"
+      mode=stopslave
+    when: inventory_hostname in mysql_server_repl_slave_of
+
+  - name: replication setup - MariaDB flavor
+    command: mysql --defaults-extra-file="{{mysql_server_ansible_config}}" -e "change master to master_host='{{item.split('.') | first}}', master_user='{{mysql_server_repl_user.name}}', master_password='{{mysql_server_repl_user.pass}}', master_use_gtid=current_pos, master_connect_retry={{mysql_server_master_connect_retry}};"
+    with_items:
+      - "{{mysql_server_repl_slave_of[inventory_hostname]}}"
+    no_log: True
+    when:
+      - inventory_hostname in mysql_server_repl_slave_of
+      - mysql_server_mappings[mysql_server_version].flavor == "mariadb"
+
+  - name: start replication
+    mysql_replication:
+      config_file="{{mysql_server_ansible_config}}"
+      mode=startslave
+    when: inventory_hostname in mysql_server_repl_slave_of
+  when: mysql_server_repl_slave_of | length > 0
+
+# /replication -----------------------------------------------------------------
+
+# galera cluster check ---------------------------------------------------------
+
+- block:
+  - name: copy check scripts
+    copy: src="{{ item }}" dest="/{{ item }}" owner=root group=root mode=0755
+    with_items:
+      - "usr/local/bin/check_galera_cluster2"
+
+  - name: monitoring script
+    template: src="{{item}}" dest="/{{ item }}" owner=root group=root mode=0755
+    with_items:
+      - "usr/bin/galeracheck"
+
+  when: mysql_use_galera
+
+# /galera cluster check --------------------------------------------------------

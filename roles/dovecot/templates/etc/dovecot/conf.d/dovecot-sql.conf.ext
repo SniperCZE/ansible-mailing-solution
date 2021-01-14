@@ -1,0 +1,20 @@
+driver = mysql
+
+connect = host={{dovecot_mysql_server}} dbname={{dovecot_mysql_dbname}} user={{dovecot_mysql_user}} password={{dovecot_mysql_passwd}}
+
+default_pass_scheme = SHA512-CRYPT
+
+password_query = \
+  SELECT concat(mb_user, '@', dom_name) as username, mb_password as password \
+  FROM mailboxes natural join domains \
+  WHERE mb_user = '%n' AND dom_name = '%d' \
+  AND mb_enabled=1 AND dom_enabled=1
+
+user_query = \
+  SELECT concat('/var/mail/', dom_name, '/', mb_user, '/') as email, 8 as uid, 8 as gid \
+  FROM mailboxes natural join domains\
+  WHERE mb_user = '%n' AND dom_name = '%d' \
+  AND mb_enabled=1 AND dom_enabled=1
+
+
+iterate_query = SELECT concat(mb_user, '@', dom_name) AS user FROM mailboxes natural join domains where mb_enabled=1 AND dom_enabled=1

@@ -1,0 +1,22 @@
+server {
+    listen 80;
+    server_name webmail;
+
+    # root directory
+    root   {{ roundcube_install_dir }}/roundcube;
+    index index.php;
+
+    # roundcube
+    location / {
+        try_files $uri $uri/ /index.php;
+    }
+    
+    # php-fpm
+    location ~ \.php$ {
+        fastcgi_pass   unix:/var/run/php7.2-fpm.socket;
+        fastcgi_index  index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+ }
+ 

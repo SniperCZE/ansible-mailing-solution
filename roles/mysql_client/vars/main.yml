@@ -1,0 +1,12 @@
+---
+## mappings for installation of specific MySQL versions
+mysql_client_mappings:
+  mariadb104:
+    apt:
+      key_id: "C74CD1D8"
+      sources_lists:
+        - "mariadb104.list"
+    packages:
+      - "mariadb-client"
+    flavor: "mariadb"
+

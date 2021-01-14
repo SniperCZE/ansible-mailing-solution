@@ -1,0 +1,16 @@
+##
+## The MySQL database server configuration file.
+##
+# One can use all long options that the program supports.
+# Run program with --help to get a list of available options and with
+# --print-defaults to see which it would actually understand and use.
+#
+# For explanations see
+# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+
+## mysqldump options
+[mysqldump]
+quick
+quote-names
+max_allowed_packet  = {{mysql_server_max_allowed_packet}}
+

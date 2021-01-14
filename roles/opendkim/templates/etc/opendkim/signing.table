@@ -1,0 +1,3 @@
+{% for dkimrecord in opendkim_keys %}
+*@{{ dkimrecord.domain }}   {{ dkimrecord.short }}
+{% endfor %}

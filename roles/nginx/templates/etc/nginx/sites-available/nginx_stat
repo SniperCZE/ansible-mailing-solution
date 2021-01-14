@@ -1,0 +1,14 @@
+#
+# Monitoring site
+#
+server {
+  listen {{nginx_stats_port}};
+
+  location /{{nginx_stats_context}} {
+    stub_status on;
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+  }
+
+}

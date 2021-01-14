@@ -1,0 +1,13 @@
+---
+dovecot_packages:
+  - "dovecot-core"
+  - "dovecot-imapd"
+  - "dovecot-lmtpd"
+  - "dovecot-managesieved"
+  - "dovecot-mysql"
+  - "dovecot-sieve"
+  
+dovecot_mysql_server: "127.0.0.1"
+dovecot_mysql_dbname: "dovecot"
+dovecot_mysql_user: "dovecot"
+dovecot_mysql_passwd: "dovecot"

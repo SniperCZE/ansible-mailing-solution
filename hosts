@@ -26,3 +26,6 @@ vps-mailfilter-01.prg01
 
 [maildb]
 vps-maildb-01.prg01
+
+[redis]
+vps-redis-01.prg01

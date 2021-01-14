@@ -1,0 +1,17 @@
+---
+- name: Remove postfix conflict packages
+  apt: name="{{ postfix_conflict_packages }}" purge=yes state=absent
+
+- name: Install postfix packages
+  apt: name="{{ postfix_packages }}" state=present
+
+- name: Configure postfix
+  template: src="etc/{{item}}" dest="/etc/{{item}}" owner=root group=root mode=0644
+  with_items:
+  - "mailname"
+  - "postfix/master.cf"
+  - "postfix/main.cf"
+  - "postfix/mysql_virtual_alias_maps.cf"
+  - "postfix/mysql_virtual_domains.cf"
+  - "postfix/mysql_virtual_mailbox_maps.cf"
+  notify: restart postfix service

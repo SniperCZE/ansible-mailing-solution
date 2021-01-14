@@ -1,0 +1,53 @@
+---
+- name: Touch redis servers
+  hosts: redis
+  gather_facts: yes
+  become: yes
+  tasks: []
+
+- name: Config Mysql for email servers
+  hosts: maildb
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - role: mysql_client
+    - role: mysql_server  
+
+- name: Config SMTP servers
+  hosts: smtp
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - role: postfix
+    - role: opendkim
+
+- name: Config IMAP servers
+  hosts: imap
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - role: dovecot
+      publisher_redis_server: "{{ groups['redis'][0] }}.ta-internal.net"
+    - role: mysql_client
+
+- name: Config mail filters (clamav, rspamd) servers
+  hosts: mailfilter
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - redis
+    - rspamd
+    - mysql_client
+
+- name: Config webmail servers
+  hosts: web_utils
+  gather_facts: yes
+  become: yes
+  
+  roles:
+    - roundcube
+    - rspamd_proxy

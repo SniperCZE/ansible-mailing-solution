@@ -1,0 +1,8 @@
+---
+dependencies:
+  - role: apt_external_package
+    external_repository_key_id: "{{mysql_client_mappings[mysql_client_version].apt.key_id}}"
+    external_repository_key_server: "hkp://eu.pool.sks-keyservers.net"
+    external_repository_tpls: "{{mysql_client_mappings[mysql_client_version].apt.sources_lists}}"
+    external_packages: "{{mysql_client_mappings[mysql_client_version].packages}}"
+

@@ -1,0 +1,29 @@
+---
+- name: install opendkim
+  apt: name="{{opendkim_packages}}" state=present cache_valid_time=10
+
+- name: config dirs exists
+  file: path="{{ item.path }}" state=directory owner="opendkim" group="opendkim" mode={{ item.mode }}
+  with_items:
+  - path: "/etc/opendkim"
+    mode: "0775"
+  - path: "/etc/opendkim/keys"
+    mode: "0711"
+  - path: "/var/spool/postfix/opendkim"
+    mode: "0777"
+
+- name: configure opendkim
+  template: src="etc/{{ item }}" dest="/etc/{{ item }}" owner=root group=root mode=0644
+  with_items:
+  - "opendkim.conf"
+  - "opendkim/signing.table"
+  - "opendkim/key.table"
+  - "opendkim/trusted.hosts"
+  - "default/opendkim"
+  notify: restart opendkim
+
+- name: save private keys
+  template: src="etc/opendkim/keys/template.private" dest="/etc/opendkim/keys/{{ item.short }}.private" owner=opendkim group=opendkim mode=0600
+  with_items: "{{ opendkim_keys }}"
+  notify: restart opendkim
+

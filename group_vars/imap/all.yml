@@ -1,0 +1,4 @@
+dovecot_mysql_server: "vps-maildb-01.prg01.ta-internal.net"
+dovecot_mysql_dbname: "postfix"
+dovecot_mysql_user: "mailman"
+dovecot_mysql_passwd: "{{vault_db_sql_mailman_pass}}"

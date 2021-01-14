@@ -1,0 +1,21 @@
+---
+- name: configure php.ini
+  template: src="etc/php/7.2/fpm/php.ini" dest="/etc/php/7.2/fpm/php.ini" owner=root group=root mode=0644
+  notify: restart php7-fpm service
+  tags:
+    - config
+
+- name: configure php-fpm.conf
+  template: src="etc/php/7.2/fpm/php-fpm.conf" dest="/etc/php/7.2/fpm/php-fpm.conf" owner=root group=root mode=0644
+  notify: restart php7-fpm service
+  tags:
+    - config
+
+- name: pool dir exists
+  file: path="/etc/php/7.2/fpm/pool.d" state=directory owner=root group=root mode=0755
+
+- name: configure php-fpm www pool
+  template: src="etc/php/7.2/fpm/pool.d/www.conf" dest="/etc/php/7.2/fpm/pool.d/www.conf" owner=root group=root mode=0644
+  notify: restart php7-fpm service
+  tags:
+    - config

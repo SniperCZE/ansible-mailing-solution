@@ -1,0 +1,5 @@
+user = mailman
+password = {{vault_db_sql_mailman_pass}}
+hosts = {{postfix_mysql_host}}
+dbname = postfix
+query = select 1 from domains where dom_name='%s' and dom_enabled=1

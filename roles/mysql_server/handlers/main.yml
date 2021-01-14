@@ -1,0 +1,9 @@
+---
+- name: restart mysql service
+  service: name=mysql state=restarted
+  notify: wait for mysql service
+  when: mysql_server_DO_NOT_RESTART == False
+
+- name: wait for mysql service
+  wait_for: port=3306
+

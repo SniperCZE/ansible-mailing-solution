@@ -1,0 +1,37 @@
+---
+postfix_packages:
+  - "postfix"
+  - "postfix-mysql"
+
+postfix_conflict_packages:
+  - "exim4"
+  - "exim4-base"
+  - "exim4-config"
+  - "exim4-light-daemon"
+
+postfix_mailname: "mail.example.com"
+
+# Variables for main.cf
+postfix_myorigin: "/etc/mailname"
+postfix_smtpd_banner: "$myhostname ESMTP $mail_name (Debian/GNU)"
+postfix_biff: "no"
+postfix_append_dot_mydomain: "no"
+postfix_delay_warning_time: "4h"
+postfix_smtpd_relay_restrictions: "permit_mynetworks permit_sasl_authenticated defer_unauth_destination"
+postfix_myhostname: "my.email.server"
+postfix_mynetworks: "127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"
+postfix_mailbox_size_limit: 0
+postfix_inet_interfaces: "all"
+postfix_inet_protocols: "all"
+postfix_virtual_mailbox_base: "/var/mail"
+postfix_virtual_mailbox_maps: "mysql:/etc/postfix/mysql_virtual_mailbox_maps.cf"
+postfix_virtual_mailbox_domains: "mysql:/etc/postfix/mysql_virtual_domains.cf"
+postfix_virtual_alias_maps: "mysql:/etc/postfix/mysql_virtual_alias_maps.cf"
+postfix_virtual_minimum_uid: 8
+postfix_virtual_minimum_gid: 8
+postfix_virtual_uid_maps: "static:8"
+postfix_virtual_gid_maps: "static:8"
+postfix_virtual_transport: "lmtp:unix:private/dovecot-lmtp"
+postfix_smtpd_sasl_auth_enable: "yes"
+postfix_smtpd_sasl_type: "dovecot"
+postfix_smtpd_sasl_path: "private/auth"

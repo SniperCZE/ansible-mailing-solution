@@ -1,0 +1,21 @@
+---
+roundcube_version: "1.3.7"
+
+roundcube_install_dir: "/var/www/html"
+roundcube_owner: "www-data"
+roundcube_group: "www-data"
+
+roundcube_db_dsnw: "mysql://roundcube:pass@localhost/roundcubemail"
+roundcube_log_driver: "syslog"
+roundcube_imap_host: "localhost"
+roundcube_smtp_host: "localhost"
+roundcube_smtp_port: 25
+roundcube_smtp_user: "%u"
+roundcube_smtp_pass: "%p"
+roundcube_support_url: ""
+roundcube_product_name: "Roundcube webmail"
+roundcube_des_key: "68Tq,tW{Sp.1,ZR[*v?#"
+roundcube_skin: "larry"
+roundcube_plugins:
+  - 'archive'
+  - 'zipdownload'

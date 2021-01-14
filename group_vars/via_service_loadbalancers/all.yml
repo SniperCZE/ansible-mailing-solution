@@ -1,0 +1,7 @@
+---
+additional_route_tables:
+  - "200 route_services"
+
+additional_ifconfig_commands:
+  - "ip route add default via 10.1.1.7 table route_services"
+  - "ip rule add fwmark 0x2 lookup route_services"

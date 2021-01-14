@@ -1,0 +1,9 @@
+---
+dependencies:
+  - role: apt_external_package
+    external_repository_key_url: "https://rspamd.com/apt-stable/gpg.key"
+    external_repository_tpls:
+      - "rspamd.list"
+    external_packages:
+      - "rspamd"
+   

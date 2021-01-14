@@ -1,0 +1,37 @@
+---
+- name: Configure rspamd
+  template: src="etc/rspamd/local.d/{{item}}" dest="/etc/rspamd/local.d/{{item}}" owner=root group=root mode=0644
+  with_items:
+  - "actions.conf"
+  - "classifier-bayes.conf"
+  - "fuzzy_check.conf"
+  - "groups.conf"
+  - "milter_headers.conf"
+  - "multimap_asn_susp.inc"
+  - "multimap_from_blacklist.inc"
+  - "multimap_from_whitelist.inc"
+  - "multimap_ip_susp.inc"
+  - "multimap_ip_whitelist.inc"
+  - "multimap.conf"
+  - "phishing.conf"
+  - "redis.conf"
+  - "regexp.conf"
+  - "replies.conf"
+  - "surbl.inc"
+  - "url_reputation.conf"
+  - "url_tags.conf"
+  - "worker-controller.inc"
+  - "worker-normal.inc"
+  - "worker-proxy.inc"
+  notify: restart rspamd service
+
+- name: Configure autolearn scripts
+  template: src="usr/local/bin/{{ item }}" dest="/usr/local/bin/{{ item }}" owner=root group=root mode=0775
+  with_items:
+  - "learn.sh"
+
+- name: Configure autolearn spam cron
+  cron: name="Autolearn spam" minute="*/5" job="/usr/local/bin/learn.sh SPAM"
+
+- name: Configure autolearn ham cron
+  cron: name="Autolearn ham" minute="*/5" job="/usr/local/bin/learn.sh HAM"

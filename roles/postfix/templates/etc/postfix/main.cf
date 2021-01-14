@@ -1,0 +1,65 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+myorigin = {{postfix_myorigin}}
+
+smtpd_banner = {{postfix_smtpd_banner}}
+biff = {{postfix_biff}}
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = {{postfix_append_dot_mydomain}}
+
+# Uncomment the next line to generate "delayed mail" warnings
+delay_warning_time = {{postfix_delay_warning_time}}
+
+#readme_directory = no
+
+# See http://www.postfix.org/COMPATIBILITY_README.html -- default to 2 on
+# fresh installs.
+#compatibility_level = 2
+
+# TLS parameters
+#smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+#smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+#smtpd_use_tls=yes
+#smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+#smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+smtpd_relay_restrictions = {{postfix_smtpd_relay_restrictions}}
+myhostname = {{postfix_myhostname}}
+#alias_maps = hash:/etc/aliases
+#alias_database = hash:/etc/aliases
+#mydestination = $myhostname, localhost.tryadmins.net, localhost
+#relayhost = 
+mynetworks = {{postfix_mynetworks}}
+mailbox_size_limit = {{postfix_mailbox_size_limit}}
+#recipient_delimiter = +
+inet_interfaces = {{postfix_inet_interfaces}}
+inet_protocols = {{postfix_inet_protocols}}
+
+virtual_mailbox_base = {{postfix_virtual_mailbox_base}}
+virtual_mailbox_maps = {{postfix_virtual_mailbox_maps}}
+virtual_mailbox_domains = {{postfix_virtual_mailbox_domains}}
+virtual_alias_maps = {{postfix_virtual_alias_maps}}
+virtual_minimum_uid = {{postfix_virtual_minimum_uid}}
+virtual_minimum_gid = {{postfix_virtual_minimum_gid}}
+virtual_uid_maps = {{postfix_virtual_uid_maps}}
+virtual_gid_maps = {{postfix_virtual_gid_maps}}
+
+virtual_transport = {{postfix_virtual_transport}}
+smtpd_sasl_auth_enable = {{postfix_smtpd_sasl_auth_enable}}
+smtpd_sasl_type = {{postfix_smtpd_sasl_type}}
+smtpd_sasl_path = {{postfix_smtpd_sasl_path}}
+
+# rspamd + opendkim
+milter_protocol = 6
+milter_default_action = accept
+smtpd_milters = inet:vps-mailfilter-01.prg01.ta-internal.net:11332 local:opendkim/opendkim.sock
+non_smtpd_milters = $smtpd_milters
+milter_mail_macros =  i {mail_addr} {client_addr} {client_name} {auth_authen}

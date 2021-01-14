@@ -1,0 +1,5 @@
+## MariaDB 10.4 repository list
+## http://downloads.mariadb.org/mariadb/repositories/
+
+deb https://mirror.vpsfree.cz/mariadb/repo/10.4/debian {{ansible_lsb.codename}} main
+deb-src https://mirror.vpsfree.cz/mariadb/repo/10.4/debian {{ansible_lsb.codename}} main

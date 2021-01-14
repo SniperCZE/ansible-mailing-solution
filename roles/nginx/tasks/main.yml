@@ -1,0 +1,39 @@
+---
+- name: install nginx
+  apt: name="{{nginx_package}}" state=present default_release="{{nginx_package_release}}"
+
+- name: configure nginx
+  template: src="etc/nginx/{{item}}" dest="/etc/nginx/{{item}}" owner=root group=root mode=0644
+  with_items:
+    - "nginx.conf"
+  notify: restart nginx service
+
+- name: extend nginx configuration
+  template: src="etc/nginx/{{item}}" dest="/etc/nginx/{{item}}" owner=root group=root mode=0644
+  with_items:
+    - "conf.d/extended_log.conf"
+    - "conf.d/proxy_log.conf"
+  notify: reload nginx service
+
+- name: configure monitoring site
+  template: src="etc/nginx/sites-available/{{item}}" dest="/etc/nginx/sites-available/{{item}}" owner=root group=root mode=0644
+  with_items:
+    - "nginx_stat"
+  notify: restart nginx service
+
+- name: enable monitoring site
+  file: src="/etc/nginx/sites-available/{{item}}" path="/etc/nginx/sites-enabled/{{item}}" state=link
+  with_items:
+    - "nginx_stat"
+  notify: restart nginx service
+
+- name: enable default vhost
+  file: path="/etc/nginx/sites-enabled/default" src="/etc/nginx/sites-available/default" state=link
+  when: nginx_use_vhost_default
+  notify: restart nginx service
+
+- name: disable default vhost
+  file: path="/etc/nginx/sites-enabled/default" state=absent
+  when: not nginx_use_vhost_default
+  notify: restart nginx service
+

@@ -1,0 +1,16 @@
+---
+dependencies:
+  - role: apt_external_package
+    external_repository_key_id: "B188E2B695BD4743"
+    external_repository_key_server: "hkp://eu.pool.sks-keyservers.net"
+    external_repository_tpls:
+      - "sury_php.list"
+    external_packages:
+      - "php7.2-cli" # already dependency of php5-fpm but left explicit for monitoring scripts
+      - "php7.2-fpm"
+      - "php-pear"
+      - "php7.2-gmp"
+      - "php7.2-mysql"
+      - "php7.2-mbstring"
+      - "php7.2-gd"
+      - "php7.2-zip"

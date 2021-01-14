@@ -1,0 +1,43 @@
+---
+- name: configure roundcube site
+  template: src="etc/nginx/sites-available/{{item}}" dest="/etc/nginx/sites-available/{{item}}" owner=root group=root mode=0644
+  with_items:
+    - "webmail"
+  notify: restart nginx service
+
+- name: enable roundcube site
+  file: src="/etc/nginx/sites-available/{{item}}" path="/etc/nginx/sites-enabled/{{item}}" state=link
+  with_items:
+    - "webmail"
+  notify: restart nginx service
+
+- name: ensure there is not some garbage from old installation
+  file: path="/tmp/roundcube.tar.gz" state=absent
+
+- name: copy roundcube installation
+  copy: src="roundcube-{{roundcube_version}}.tar.gz" dest="/tmp/roundcube.tar.gz"
+
+- name: ensure docroot exists
+  file: path="{{ roundcube_install_dir }}" state=directory owner="{{ roundcube_owner }}" group="{{ roundcube_group }}" mode=0775
+
+- name: unarchive needs gtar
+  apt: name="devscripts" state=present
+
+- name: untar roundcube installation
+  unarchive: src="/tmp/roundcube.tar.gz" dest="{{ roundcube_install_dir }}" remote_src=yes
+
+- name: initial configuration of roundcube
+  template: src="var/www/html/roundcube/config/config.inc.php" dest="{{ roundcube_install_dir }}/roundcubemail-{{ roundcube_version }}/config/config.inc.php" owner="{{ roundcube_owner }}" group="{{ roundcube_group }}" mode=0775
+
+#- name: Password plugin configuration
+#  template: src="var/www/html/roundcube/plugins/password/config.inc.php" dest="{{ roundcube_install_dir }}/roundcubemail-{{ roundcube_version }}/plugins/password/config.inc.php" owner="{{ roundcube_owner }}" group="{{ roundcube_group }}" mode=0775 
+#  when: "password" in roundcube_plugins
+
+- name: switch link to webroot
+  file: src="{{ roundcube_install_dir }}/roundcubemail-{{roundcube_version}}" dest="{{ roundcube_install_dir }}/roundcube" state=link
+
+- name: ensure logs and temp is writable
+  file: path="{{roundcube_install_dir}}/roundcube/{{item}}" state=directory owner="{{ roundcube_owner }}" group="{{ roundcube_group }}" mode=0755
+  with_items:
+    - "logs"
+    - "temp"

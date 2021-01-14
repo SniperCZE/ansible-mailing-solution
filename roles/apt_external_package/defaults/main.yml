@@ -1,0 +1,28 @@
+---
+# HEX id of signing key
+external_repository_key_id: Null
+
+# URL with public signing key
+external_repository_key_url: Null
+
+# Keyserver from which that key can be obtained
+external_repository_key_server: Null
+
+# Path for external signing key
+external_repository_key_path: Null
+
+# list of repository templates
+external_repository_tpls: Null
+
+# settings in preferences.d
+external_repository_preferences: Null
+
+# list of packages to be installed
+external_packages: Null
+
+# list of packages to be removed before installation
+conflict_packages: Null
+
+# flag whether install recommended packages
+external_packages_recommends: False
+

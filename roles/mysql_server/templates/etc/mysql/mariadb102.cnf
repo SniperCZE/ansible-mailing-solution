@@ -1,0 +1,190 @@
+##
+## The MySQL database server configuration file.
+##
+# One can use all long options that the program supports.
+# Run program with --help to get a list of available options and with
+# --print-defaults to see which it would actually understand and use.
+#
+# For explanations see
+# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+
+
+## mysqld_safe startup script options
+[mysqld_safe]
+socket                = /var/run/mysqld/mysqld.sock
+nice                  = 0
+syslog
+
+
+## mysqld server options
+[mysqld]
+#
+# * Basic Settings
+#
+user                  = mysql
+
+pid-file              = /var/run/mysqld/mysqld.pid
+socket                = /var/run/mysqld/mysqld.sock
+basedir               = /usr
+datadir               = /var/lib/mysql
+tmpdir                = /tmp
+lc-messages-dir       = /usr/share/mysql
+
+skip_external_locking
+
+port                  = {{mysql_server_port}}
+bind-address          = {{mysql_server_bind_address}}
+max_connections       = {{mysql_server_max_connections}}
+max_allowed_packet    = {{mysql_server_max_allowed_packet}}
+skip-name-resolve
+
+wait_timeout          = {{mysql_server_wait_timeout}}
+interactive_timeout   = {{mysql_server_interactive_timeout}}
+
+#
+# * Fine Tuning
+#
+
+key_buffer_size       = {{mysql_server_key_buffer_size}}
+thread_stack          = {{mysql_server_thread_stack}}
+thread_cache_size     = {{mysql_server_thread_cache_size}}
+
+read_buffer_size      = {{mysql_server_read_buffer_size}}
+sort_buffer_size      = {{mysql_server_sort_buffer_size}}
+join_buffer_size      = {{mysql_server_join_buffer_size}}
+
+# This replaces the startup script and checks MyISAM tables if needed
+# the first time they are touched
+myisam-recover-options      = BACKUP
+
+table_open_cache            = {{mysql_server_table_open_cache}}
+table_open_cache_instances  = {{mysql_server_table_open_cache_instances}}
+
+thread_concurrency          = {{mysql_server_thread_concurrency}}
+
+tmp_table_size              = {{mysql_server_tmp_table_size}}
+max_heap_table_size         = {{mysql_server_max_heap_table_size}}
+
+#
+# * Encoding
+#
+
+character-set-server    = {{mysql_server_character_set_server}}
+collation-server        = {{mysql_server_collation_server}}
+
+
+#
+# * Query Cache Configuration
+#
+
+query_cache_type        = {{mysql_server_query_cache_type}}
+{% if mysql_server_query_cache_type > 0 %}
+query_cache_limit       = {{mysql_server_query_cache_limit}}
+query_cache_size        = {{mysql_server_query_cache_size}}
+{% endif %}
+
+
+#
+# * Logging
+#
+
+general-log               = {{mysql_server_general_log}}
+{% if mysql_server_general_log > 0 %}
+general_log_file          = {{mysql_server_general_log_file}}
+{% endif %}
+
+slow-query-log            = {{mysql_server_slow_query_log}}
+{% if mysql_server_slow_query_log > 0 %}
+slow_query_log_file       = {{mysql_server_slow_query_log_file}}
+long_query_time           = {{mysql_server_long_query_time}}
+log_slow_admin_statements = {{mysql_server_log_slow_admin_statements}}
+log_slow_verbosity        = {{mysql_server_log_slow_verbosity}}
+
+{% if ansible_hostname in mysql_server_repl_slave_of %}
+log_slow_slave_statements = {{mysql_server_log_slow_slave_statements}}
+{% endif %}
+
+log-queries-not-using-indexes = {{mysql_server_log_queries_not_using_indexes}}
+{% endif %}
+
+
+#
+# * Replication
+#
+
+#
+# The following can be used as easy to replay backup logs or for replication.
+# note: if you are setting up a replication slave, see README.Debian about
+#       other settings you may need to change.
+server-id                 = {{mysql_server_server_id}}
+log_bin                   = {{mysql_server_log_bin}}
+log_bin_index             = {{mysql_server_log_bin}}.index
+binlog_format             = {{mysql_server_binlog_format}}
+expire_logs_days          = {{mysql_server_expire_logs_days}}
+max_binlog_size           = {{mysql_server_max_binlog_size}}
+
+auto_increment_increment  = {{mysql_server_auto_increment_increment}}
+auto_increment_offset     = {{mysql_server_auto_increment_offset}}
+
+log_slave_updates         = {{mysql_server_log_slave_updates}}
+
+{% for schema in mysql_server_schemas %}
+{% if mysql_server_replication_mode == "explicit" and schema.replicate|default(1) %}
+binlog_do_db            = {{schema.name}}
+{% endif %}
+{% endfor %}
+
+{% for schema in mysql_server_schemas %}
+{% if mysql_server_replication_mode == "ignore" and not schema.replicate|default(1) %}
+binlog_ignore_db        = {{schema.name}}
+{% endif %}
+{% endfor %}
+
+
+#
+# * InnoDB
+#
+
+innodb_buffer_pool_size         = {{mysql_server_innodb_buffer_pool_size}}
+innodb_buffer_pool_instances    = {{mysql_server_innodb_buffer_pool_instances}}
+innodb_io_capacity              = {{mysql_server_innodb_io_capacity}}
+
+innodb_data_file_path           = {{mysql_server_innodb_data_file_path}}
+innodb_autoextend_increment     = {{mysql_server_innodb_autoextend_increment}}
+
+innodb_log_file_size            = {{mysql_server_innodb_log_file_size}}
+innodb_log_buffer_size          = {{mysql_server_innodb_log_buffer_size}}
+
+innodb_flush_log_at_trx_commit  = {{mysql_server_innodb_flush_log_at_trx_commit}}
+innodb_flush_method             = {{mysql_server_innodb_flush_method}}
+
+innodb_lock_wait_timeout        = {{mysql_server_innodb_lock_wait_timeout}}
+
+innodb_file_per_table           = {{mysql_server_innodb_file_per_table}}
+innodb_autoinc_lock_mode        = {{mysql_server_innodb_autoinc_lock_mode}}
+innodb_doublewrite              = {{mysql_server_innodb_doublewrite}}
+
+
+#
+# * Security Features
+#
+
+# Read the manual, too, if you want chroot!
+# chroot     = /var/lib/mysql/
+#
+# For generating SSL certificates I recommend the OpenSSL GUI "tinyca".
+#
+# ssl-ca     = /etc/mysql/cacert.pem
+# ssl-cert   = /etc/mysql/server-cert.pem
+# ssl-key    = /etc/mysql/server-key.pem
+
+
+{% if mysql_server_confd is mapping and mysql_server_confd | length > 0 %}
+#
+# * Extra configuration
+#
+
+{% for variable, value in mysql_server_confd.iteritems() %}
+{{variable}} = {{value}}
+{% endfor %}
+{% endif %}

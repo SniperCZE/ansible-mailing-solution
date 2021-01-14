@@ -1,0 +1,54 @@
+---
+- name: Install dovecot packages
+  apt: name="{{ dovecot_packages }}" state=present
+
+- name: create sieve script dir
+  file: path="/etc/dovecot/{{item}}" state=directory owner=mail group=mail mode=0755
+  with_items:
+  - "sieve"
+  - "queues"
+
+- name: Configure dovecot
+  template: src="etc/dovecot/conf.d/{{item}}" dest="/etc/dovecot/conf.d/{{item}}" owner=root group=root mode=0644
+  with_items:
+  - "10-auth.conf"
+  - "10-director.conf"
+  - "10-logging.conf"
+  - "10-mail.conf"
+  - "10-master.conf"
+  - "10-ssl.conf"
+  - "15-lda.conf"
+  - "15-mailboxes.conf"
+  - "20-imap.conf"
+  - "20-lmtp.conf"
+  - "20-managesieve.conf"
+  - "90-acl.conf"
+  - "90-plugin.conf"
+  - "90-quota.conf"
+  - "90-sieve-extprograms.conf"
+  - "90-sieve.conf"
+  - "90-imapsieve.conf"
+  - "auth-sql.conf.ext"
+  - "dovecot-sql.conf.ext"
+  notify: restart dovecot service
+
+- name: Autolearn scripts
+  template: src="etc/dovecot/sieve/{{item}}" dest="/etc/dovecot/sieve/{{item}}" owner=mail group=mail mode=0755
+  with_items:
+  - "learn.sh"
+
+- name: Sieve spam scripts
+  template: src="etc/dovecot/sieve/{{item}}" dest="/etc/dovecot/sieve/{{item}}" owner=mail group=mail mode=0644
+  with_items:
+  - "report-ham.sieve"
+  - "report-spam.sieve"
+  - ".dovecot.sieve"
+  notify: 
+    - restart dovecot service
+    - compile sieves
+
+- name: Configure fail2ban for dovecot
+  template: src="etc/fail2ban/{{ item }}" dest="/etc/fail2ban/{{ item }}" owner=root group=root mode=0644
+  with_items:
+  - "jail.d/dovecot.conf"
+  notify: restart fail2ban service

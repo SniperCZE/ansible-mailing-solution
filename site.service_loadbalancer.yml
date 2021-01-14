@@ -11,6 +11,7 @@
   become: yes
 
   roles:
+    - role: keepalive
     - role: fail2ban_redis_listener
       listener_redis_server: "{{ groups['redis'][0] }}.ta-internal.net"
 

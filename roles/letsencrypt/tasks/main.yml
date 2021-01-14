@@ -1,0 +1,9 @@
+---
+- name: install let's encrypt agent
+  apt: name="certbot" state=present update_cache="yes" default_release="buster-backports"
+
+- name: let's encrypt auto renew
+  cron: name="LE autorenew" minute="{{ 59 |random(seed=inventory_hostname) }}" hour="2" weekday="{{ 6 |random(seed=inventory_hostname) }}" job="/usr/local/bin/certRenew.sh"
+
+- name: create LE cert generator
+  template: src="usr/local/bin/certRenew.sh" dest="/usr/local/bin/certRenew.sh" owner=root group=root mode=0755

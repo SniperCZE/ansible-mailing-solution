@@ -1,0 +1,23 @@
+---
+failover_public_ips_eth1: 
+  - "your.private.ip.addr/mask dev eth1"
+failover_public_ips_eth0:
+  - "your.public.ip.www/mask dev eth0"
+keepalived_interface: "eth1"
+keepalived_vrrp_group_name: "PUBLIC_WWW"
+keepalived_vrrp_routes_eth0:
+  - "default via your.gate.way.ip dev eth0"
+
+keepalived_vrid_eth0: 51
+keepalived_vrid_eth1: 52
+
+webutils_servers: "{{ groups['web_utils'] }}"
+www_loadbalancers: "{{ groups['www_loadbalancers'] }}"
+
+webutils_domains:
+  - "webmail"
+  - "rspamd"
+
+letsencrypt_domainlist: 
+  - "webmail"
+  - "rspamd"

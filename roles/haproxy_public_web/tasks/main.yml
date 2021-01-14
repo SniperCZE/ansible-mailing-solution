@@ -1,0 +1,14 @@
+---
+- name: haproxy public web configuration
+  template: src="etc/haproxy/conf.d/20-public_web.conf" dest="/etc/haproxy/conf.d/20-public_web.conf" owner=root group=root mode=0644
+  notify: merge haproxy config files
+
+- name: prepare dirs
+  file: path="/etc/haproxy/{{ item }}" state=directory owner=root group=root
+  with_items:
+    - "conf.d"
+    - "certs"
+
+#- name: Copy self signed cert for haproxy
+#  copy: src="selfsigned.pem" dest="/etc/haproxy/certs/selfsigned.pem" owner=root group=root mode=0644
+#  notify: restart haproxy service

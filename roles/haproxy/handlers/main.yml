@@ -1,0 +1,8 @@
+---
+- name: merge haproxy config files
+  assemble: src="/etc/haproxy/conf.d" dest="/etc/haproxy/haproxy.cfg" owner=root group=root mode=0644
+  notify: restart haproxy service
+
+- name: restart haproxy service
+  service: name=haproxy state=restarted
+

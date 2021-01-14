@@ -1,0 +1,4 @@
+---
+haproxy_packages:
+  - "libssl1.1"
+  - "haproxy=1.8.*"

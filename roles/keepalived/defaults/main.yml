@@ -1,0 +1,10 @@
+---
+failover_public_ip: "{{ ansible_default_ipv4.address }}"
+keepalived_host_priority: 100
+keepalived_vrid_eth0: 151
+keepalived_vrid_eth1: 152
+keepalived_vrrp_routes_eth0: []
+keepalived_vrrp_routes_eth1: []
+keepalived_interface: "eth0"
+keepalived_state: "MASTER"
+keepalived_notify_email: "your@email.com"

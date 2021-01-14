@@ -1,0 +1,22 @@
+---
+haproxy_stats_port: 8080
+
+# list of users authorized to access HAproxy statistics
+haproxy_stats_users: []
+#  - username: john_doe
+#    password: f00b4r
+
+haproxy_log_heartbeat: "daily"
+haproxy_log_rotate: 52
+haproxy_log_delay_compress: True
+
+haproxy_global_maxconn: 1596
+
+haproxy_defaults_maxconn: 2000
+haproxy_defaults_timeout_connect: "5s"
+haproxy_defaults_timeout_client: "60s"
+haproxy_defaults_timeout_server: "60s"
+haproxy_defaults_timeout_http_keep_alive: "10s"
+
+haproxy_stats_refresh: "10s"
+haproxy_stats_https: false

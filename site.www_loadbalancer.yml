@@ -1,0 +1,16 @@
+---
+- name: Touch web servers
+  hosts: web_utils
+  gather_facts: yes
+  become: yes
+  tasks: []
+
+- name: Setup www loadbalancers
+  hosts: www_loadbalancers
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - keepalive
+    - haproxy_public_web
+    - letsencrypt

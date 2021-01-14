@@ -1,0 +1,10 @@
+---
+- name: Install KeepAlived
+  apt: name="keepalived" state=present
+  
+- name: Check there is keepalived config dir
+  file: path="/etc/keepalived" state=directory owner=root group=root mode=0755
+
+- name: Configure KeepAlived
+  template: src="etc/keepalived/keepalived.conf" dest="/etc/keepalived/keepalived.conf" owner=root group=root mode=0644
+  notify: Restart keepalived

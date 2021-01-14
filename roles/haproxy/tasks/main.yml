@@ -1,0 +1,21 @@
+---
+- name: install haproxy
+  apt: name="{{haproxy_packages}}" state=present cache_valid_time=10
+
+- name: prepare dirs
+  file: path="/etc/haproxy/{{ item }}" state=directory owner=root group=root
+  with_items:
+    - "conf.d"
+    - "certs"
+
+- name: global configuration
+  template: src="etc/haproxy/conf.d/01-global.conf" dest="/etc/haproxy/conf.d/01-global.conf" owner=root group=root mode=0644
+  notify: merge haproxy config files
+
+- name: set file descriptors limit
+  copy: src="etc/sysctl.d/91-openfiles.conf" dest="/etc/sysctl.d/91-openfiles.conf" owner=root group=root mode=0644
+  notify: restart haproxy service
+
+- name: set openfiles limit
+  copy: src="etc/security/limits.d/91-openfiles.conf" dest="/etc/security/limits.d/91-openfiles.conf" owner=root group=root mode=0644
+  notify: restart haproxy service

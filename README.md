@@ -1,5 +1,7 @@
 # ansible-mailing-solution
-Complete mailing solution with dkim signatures, webmail and antispam, just ready to deploy. Tested on Debian Buster. Doesn't support TLS yet!
+Complete mailing solution with dkim signatures, webmail and antispam. Tested on Debian Buster. Doesn't support TLS yet!
+
+Before usage, you should go thru all files, add some IPs, hosts etc. Just as always, you must know what you're doing.
 
 ## repo structure
 `/filter_plugins`

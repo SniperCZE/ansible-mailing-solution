@@ -1,0 +1,10 @@
+---
+system_user_user: "user"
+system_user_group: "{{system_user_user}}"
+
+system_user_home: "{% if system_user_user == 'root' %}/root{% else %}/home/{{system_user_user}}{% endif %}"
+system_user_shell: "/bin/bash"
+
+system_user_private_key: ""
+system_user_public_key: ""
+

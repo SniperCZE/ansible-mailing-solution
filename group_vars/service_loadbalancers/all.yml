@@ -1,12 +1,12 @@
 ---
 failover_public_ips_eth1: 
-  - "10.1.1.7/24 dev eth1"
+  - "your.private.ip.addr/mask dev eth1"
 failover_public_ips_eth0:
-  - "89.187.129.36/27 dev eth0"
+  - "your.public.ip.email/mask dev eth0"
 keepalived_interface: "eth1"
 keepalived_vrrp_group_name: "PUBLIC_SERVICES"
 keepalived_vrrp_routes_eth0:
-  - "default via 89.187.129.39 dev eth0"
+  - "default via your.gate.way.ip dev eth0"
 
 keepalived_vrid_eth0: 151
 keepalived_vrid_eth1: 152

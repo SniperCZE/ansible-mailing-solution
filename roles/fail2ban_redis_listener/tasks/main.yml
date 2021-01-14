@@ -1,0 +1,14 @@
+---
+- name: Install required packages
+  apt: name="{{ listener_packages }}" state=present
+
+- name: Create listener script
+  template: src="usr/local/sbin/listener.py" dest="/usr/local/sbin/listener.py" owner=root group=root mode=0755
+
+
+- name: Create systemd unit
+  template: src="etc/systemd/system/fail2ban_listener.service" dest="/etc/systemd/system/fail2ban_listener.service" owner=root group=root mode=0644
+  notify: Restart listener service
+
+- name: Reload systemd configs
+  systemd: daemon_reload=yes

@@ -1,0 +1,7 @@
+---
+listener_packages:
+  - "python3"
+  - "python3-redis"
+  - "ipset"
+
+listener_redis_server: "127.0.0.1"

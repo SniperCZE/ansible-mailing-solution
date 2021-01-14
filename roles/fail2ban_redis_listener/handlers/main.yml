@@ -1,0 +1,4 @@
+---
+- name: Restart listener service
+  service: name=fail2ban_listener state=restarted
+

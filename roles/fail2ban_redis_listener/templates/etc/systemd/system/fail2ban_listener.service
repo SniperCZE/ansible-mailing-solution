@@ -1,0 +1,18 @@
+[Unit]
+Description=Redis Listener: Daemon that listen, ban and unban
+Before=network-pre.target
+Wants=network-pre.target
+After=polkit.service
+#Conflicts=iptables.service ip6tables.service ebtables.service ipset.service
+
+[Service]
+ExecStart=/usr/local/sbin/listener.py --nofork --nopid
+ExecStop=/bin/kill -HUP $MAINPID
+# supress to log debug and error output also to /var/log/messages
+StandardOutput=null
+StandardError=null
+Type=idle
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

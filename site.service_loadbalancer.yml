@@ -1,0 +1,16 @@
+---
+- name: Touch redis servers
+  hosts: redis
+  gather_facts: yes
+  become: yes
+  tasks: []
+
+- name: Setup service loadbalancers
+  hosts: service_loadbalancers
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - role: fail2ban_redis_listener
+      listener_redis_server: "{{ groups['redis'][0] }}.ta-internal.net"
+

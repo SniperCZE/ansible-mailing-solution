@@ -1,0 +1,19 @@
+---
+- name: configure rsyslog
+  template: src="etc/{{item}}" dest="/etc/{{item}}" owner=root group=root mode=0644
+  with_items:
+    - "rsyslog.conf"
+  notify: restart rsyslog service
+
+- name: configure central logging
+  template: src="etc/rsyslog.d/10-remote.conf" dest="/etc/rsyslog.d/10-remote.conf" owner=root group=root mode=0644
+  when: rsyslog_remote_server != ""
+  notify: restart rsyslog service
+
+- name: unconfigure central logging
+  file: path="etc/rsyslog.d/10-remote.conf" state=absent
+  when: rsyslog_remote_server == ""
+  notify: restart rsyslog service
+
+- name: configure log rotation
+  template: src="etc/logrotate.d/rsyslog" dest="/etc/logrotate.d/rsyslog" owner=root group=root mode=0644

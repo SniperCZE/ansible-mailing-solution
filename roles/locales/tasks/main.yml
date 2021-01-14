@@ -1,0 +1,38 @@
+---
+- name: install
+  apt:
+    name: "{{ locales_dependencies }}"
+    state: "{{ apt_install_state | default('latest') }}"
+    update_cache: true
+    cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
+
+- name: detect locale gen file
+  stat:
+    path: "{{ locales_gen_file }}"
+  register: _locales_gen_file_stats
+
+- name: create locale gen file
+  file:
+    path: "{{ locales_gen_file }}"
+    state: touch
+  when: not _locales_gen_file_stats.stat.exists
+
+- name: make sure (specified) locales are present
+  locale_gen:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ locales_present }}"
+
+- name: make sure (specified) locales are absent
+  locale_gen:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ locales_absent }}"
+
+- name: set default locale
+  template:
+    src: etc/default/locale.j2
+    dest: /etc/default/locale
+    owner: root
+    group: root
+    mode: 0644

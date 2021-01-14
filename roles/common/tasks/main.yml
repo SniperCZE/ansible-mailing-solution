@@ -1,0 +1,66 @@
+---
+## setup correct timezone
+## -----------------------------------------------------------------------------
+- name: link timezone
+  file: src="/usr/share/zoneinfo/{{common_timezone}}" dest="/etc/localtime" state=link owner=root group=root mode=0644 force=yes
+
+- name: save timezone
+  replace: dest="/etc/timezone" regexp=".+" replace="{{common_timezone}}" owner=root group=root mode=0644
+
+
+## disable IPv6
+## -----------------------------------------------------------------------------
+
+- name: disable IPv6
+  sysctl: name="net.ipv6.conf.{{item}}.disable_ipv6" value="1" state=present reload=yes
+  with_items:
+    - "all"
+    - "default"
+
+#- name: disable ip6tables
+  #service: name=ip6tables enabled=false
+
+#- name: ensure ip6tables stopped
+  #service: name=ip6tables state=stopped
+
+
+## setup DNS
+## -----------------------------------------------------------------------------
+
+- name: setup DNS settings
+  template: src="etc/resolv.conf" dest="/etc/resolv.conf" owner=root group=root mode=0644
+  when: common_dns_servers | length > 0
+
+
+## install common packages
+## -----------------------------------------------------------------------------
+
+- name: install common packages
+  apt: name="{{common_packages}}" state=present
+
+
+## prepare Ansible facts.d
+
+- name: create facts.d
+  file: path="/etc/ansible/facts.d" state=directory owner=root group=root mode=0755
+
+
+## basic configuration of utilities
+## -----------------------------------------------------------------------------
+
+- name: setup global bash configuration
+  template: src="etc/bash.bashrc" dest="/etc/bash.bashrc" owner=root group=root mode=0644
+
+- name: setup screen config
+  template: src="etc/screenrc" dest="/etc/screenrc" owner=root group=root mode=0644
+
+- name: setup route lookup tables
+  template: src="etc/iproute2/rt_tables" dest="/etc/iproute2/rt_tables" owner=root group=root mode=0644
+
+- name: Add additional ifup commands
+  interfaces_file: iface="eth0" option="up" value="{{ item }}" state=present backup=yes
+  with_items: "{{ additional_ifconfig_commands }}"
+
+- name: Add additional ssh keys
+  authorized_key: user="{{ item.user }}" key="{{ item.key }}" state=present
+  with_items: "{{ additional_ssh_keys }}"

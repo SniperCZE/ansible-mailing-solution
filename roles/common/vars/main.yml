@@ -1,0 +1,32 @@
+---
+common_packages:
+  - apt-transport-https
+  - bc
+  - bzip2
+  - curl
+  - dnsutils
+  - fping
+  - git
+  - htop
+  - iftop
+  - iotop
+  - lsof
+  - ltrace
+  - mc
+  - mlocate
+  - mtr
+  - nmap
+  - parted
+  - psmisc
+  - python-pip
+  - python-selinux
+  - rsync
+  - screen
+  - ssldump
+  - strace
+  - sudo
+  - tcpdump
+  - telnet
+  - vim
+  - wget
+

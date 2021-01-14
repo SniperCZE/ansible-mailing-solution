@@ -1,0 +1,9 @@
+---
+- name: First run for new container
+  hosts: all
+  gather_facts: yes
+  become: yes
+  serial: 5
+
+  roles:
+    - role: common

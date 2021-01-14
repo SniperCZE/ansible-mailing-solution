@@ -1,0 +1,20 @@
+---
+rsyslog_remote_server: ""
+rsyslog_remote_port: 5140
+
+rsyslog_log_heartbeat: "weekly"
+rsyslog_log_rotate: 4
+rsyslog_log_delay_compress: True
+
+rsyslog_log_syslog_heartbeat: "daily"
+rsyslog_log_syslog_rotate: 7
+rsyslog_log_syslog_delay_compress: True
+
+rsyslog_log_daemon_heartbeat: "daily"
+rsyslog_log_daemon_rotate: 7
+rsyslog_log_daemon_delay_compress: True
+
+rsyslog_allow_udp: False
+rsyslog_udp_port: 514
+rsyslog_allow_tcp: False
+rsyslog_tcp_port: 514

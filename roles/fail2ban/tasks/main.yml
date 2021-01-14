@@ -1,0 +1,9 @@
+---
+- name: Install fail2ban
+  apt: name="fail2ban" state=present
+
+- name: Configure fail2ban
+  template: src="etc/fail2ban/{{item}}" dest="/etc/fail2ban/{{item}}" owner=root group=root mode=0644
+  with_items:
+  - "fail2ban.conf"
+  notify: restart fail2ban service

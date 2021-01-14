@@ -1,0 +1,4 @@
+## Generic config variables
+all_domain_root: "<<INSERT DOMAINNAME>>"
+
+rsyslog_remote_server: ""

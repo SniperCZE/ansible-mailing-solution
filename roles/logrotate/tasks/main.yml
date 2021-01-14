@@ -1,0 +1,9 @@
+---
+- name: Install logrotate
+  apt: name="logrotate" state=present
+
+- name: Configure logrotate
+  template: src="etc/{{item}}" dest="/etc/{{item}}" owner=root group=root mode=0644
+  with_items:
+  - "logrotate.conf"
+  - "logrotate.d/rsyslog"

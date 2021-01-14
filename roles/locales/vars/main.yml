@@ -1,0 +1,5 @@
+---
+locales_dependencies:
+  - tzdata
+  - locales
+locales_gen_file: "/etc/locale.gen"

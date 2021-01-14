@@ -1,0 +1,12 @@
+---
+# default time zone
+common_timezone: "UTC"
+
+common_dns_domain: ""
+
+common_dns_servers: []
+
+common_terminal_color_schema: "0"
+
+additional_route_tables: []
+additional_ifconfig_commands: []

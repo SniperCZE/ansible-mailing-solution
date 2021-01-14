@@ -1,0 +1,9 @@
+---
+dependencies:
+  - locales
+  - firewall
+  - apt
+  - ntp
+  - rsyslog
+  - ssh
+  - logrotate

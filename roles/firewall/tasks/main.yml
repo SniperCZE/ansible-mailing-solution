@@ -1,0 +1,16 @@
+---
+- name: install dependencies
+  include_vars: "{{item}}"
+  with_first_found:
+    - files:
+      - "{{ansible_distribution}}-{{ansible_distribution_major_version}}.yml"
+      - "{{ansible_distribution}}.yml"
+      - "default.yml"
+
+- name: install dependencies
+  apt: name="{{firewall_packages}}" state=present
+
+- name: prepare persistent firewall rules
+  template: src="etc/iptables/rules.v4" dest="/etc/iptables/rules.v4" owner=root group=root mode=0644 force=yes
+  notify: restart firewall service
+

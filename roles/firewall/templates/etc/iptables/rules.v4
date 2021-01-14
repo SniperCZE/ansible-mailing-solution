@@ -1,0 +1,59 @@
+## iptables managed by Ansible
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:fail2ban-ssh - [0:0]
+
+{% for firewall_def in firewall_rules %}
+{% if firewall_def.group in groups and inventory_hostname in groups[firewall_def.group] and 'filter' in firewall_def %}
+## rules for '{{firewall_def.group}}' group
+{% for firewall_rule in firewall_def.filter %}
+{% if firewall_rule != "" %}
+{{firewall_rule}}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+{% for firewall_def in firewall_rules %}
+{% if firewall_def.group in groups and inventory_hostname in groups[firewall_def.group] and 'nat' in firewall_def %}
+## rules for '{{firewall_def.group}}' group
+{% for firewall_rule in firewall_def.nat %}
+{% if firewall_rule != "" %}
+{{firewall_rule}}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+COMMIT
+
+*mangle
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+{% for firewall_def in firewall_rules %}
+{% if firewall_def.group in groups and inventory_hostname in groups[firewall_def.group] and 'mangle' in firewall_def %}
+## rules for '{{firewall_def.group}}' group
+{% for firewall_rule in firewall_def.mangle %}
+{% if firewall_rule != "" %}
+{{firewall_rule}}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+COMMIT

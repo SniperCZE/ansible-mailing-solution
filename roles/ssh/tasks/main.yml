@@ -1,0 +1,68 @@
+---
+- name: install SSH server
+  apt: name="openssh-server" state=present
+
+- name: configure SSH service
+  template: src=etc/ssh/sshd_config dest=/etc/ssh/sshd_config owner=root group=root mode=0600
+  notify: restart SSH server service
+
+- name: fix root's .ssh directory
+  file: path="/root/.ssh" state=directory owner=root group=root mode=0700
+
+- name: generate root's SSH key
+  command: creates="/root/.ssh/id_rsa" ssh-keygen -b 4096 -t rsa -P '' -f /root/.ssh/id_rsa
+  when: ssh_root_private_key_generated
+
+- block:
+
+  - name: create root's SSH key
+    copy: content="{{ssh_root_private_key}}" dest="/root/.ssh/id_rsa" owner=root group=root mode=0600
+
+  - name: remove root's public SSH key
+    file: path="/root/.ssh/id_rsa.pub" state=absent
+
+  when: ssh_root_private_key and ssh_root_private_key | length > 4
+
+- name: fix admin's .ssh directory
+  file: path="{{ssh_admin_home}}/.ssh" state=directory owner={{ssh_admin}} group={{ssh_admin}} mode=0700
+  when: ssh_admin_over_root
+
+- name: override authorized_keys.d path for admin
+  set_fact:
+    ssh_authorized_keys_owner: "{{ssh_admin}}"
+    ssh_config_path: "{{ssh_admin_home}}/.ssh"
+  when: ssh_admin_over_root
+
+##
+## module `assemble` is not working with 'remote_src=False'
+##
+## authorized_key module can not 'reset' authorized_keys to new **set**, it only
+## checks individual keys, with_items loop behaves differently
+##
+
+- name: setup authorized SSH keys (remove temporary directory for fragments)
+  file: path="{{ssh_config_path}}/authorized_keys.d" state=absent
+
+- name: setup authorized SSH keys (create temporary directory for fragments)
+  file: path="{{ssh_config_path}}/authorized_keys.d" state=directory owner="{{ssh_authorized_keys_owner}}" group="{{ssh_authorized_keys_owner}}" mode=0700
+
+- name: setup authorized SSH keys (upload trusted admin keys)
+  copy: src="authorized_keys.d/{{item}}" dest="{{ssh_config_path}}/authorized_keys.d/{{item}}" owner="{{ssh_authorized_keys_owner}}" group="{{ssh_authorized_keys_owner}}" mode=0700
+  with_items: "{{ssh_authorized_keys}}"
+
+- name: setup authorized SSH keys (assemble authorized_keys)
+  assemble: src="{{ssh_config_path}}/authorized_keys.d" dest="{{ssh_config_path}}/authorized_keys" owner={{ssh_authorized_keys_owner}} group={{ssh_authorized_keys_owner}} mode=0600 force=yes
+
+- block:
+
+  - name: setup systemd services for SSH tunnels
+    template: src="lib/systemd/system/ssh_tunnel.service" dest="/lib/systemd/system/ssh-tunnel-{{item.name}}.service" owner=root group=root mode=0644
+    with_items:
+      - "{{ssh_tunnels}}"
+
+  - name: enable systemd services for SSH tunnels
+    systemd: name="ssh-tunnel-{{item.name}}" daemon_reload=yes enabled=yes state=restarted
+    with_items:
+      - "{{ssh_tunnels}}"
+
+  when: ssh_tunnels | length > 0

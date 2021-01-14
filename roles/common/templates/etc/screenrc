@@ -1,0 +1,5 @@
+startup_message off
+vbell off
+caption always "%{= yw} %{+b yW} %h%{-} %=%{ Ky} %H %{-}%{+b rY}%4`%{+b gY}%5`%{-}"
+hardstatus alwayslastline "%{ Kw}%-Lw%{ yW} %n%f %t %{-}%+Lw %=[%D] %d.%m.%Y %c"
+

@@ -1,0 +1,28 @@
+[all:vars]
+host_domain={{ all_domain_root }}
+ansible_host='{{ inventory_hostname }}.{{ host_domain }}'
+
+[www_loadbalancers]
+vps-lb-01.prg01
+
+[service_loadbalancers]
+vps-services-lb-01.prg01
+
+[via_service_loadbalancers]
+vps-smtp-01.prg01
+vps-imap-01.prg01
+
+[web_utils]
+vps-web-utils.prg01
+
+[smtp]
+vps-smtp-01.prg01
+
+[imap]
+vps-imap-01.prg01
+
+[mailfilter]
+vps-mailfilter-01.prg01
+
+[maildb]
+vps-maildb-01.prg01

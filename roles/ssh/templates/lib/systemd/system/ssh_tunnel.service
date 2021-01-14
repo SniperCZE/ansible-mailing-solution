@@ -1,0 +1,36 @@
+[Unit]
+Description=SSH tunnel {{item.name}}
+
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root
+
+ExecStart=/usr/bin/ssh -n -N -T \
+              -o ServerAliveInterval={{item.alive_interval | default(default_alive_interval)}} \
+              -o ServerAliveCountMax={{item.alive_max_count | default(default_alive_max_count)}} \
+{% for local_forward in item.local_forwards %}
+              -L {{local_forward}} \
+{% endfor %}
+{% for remote_forward in item.remote_forwards %}
+              -R {{remote_forward}} \
+{% endfor %}
+              -p {{item.remote_port | default(default_remote_port)}} \
+              {{item.remote_user | default(default_remote_user)}}@{{item.remote_host}}
+
+User=root
+Group=root
+
+Restart=always
+RestartSec=5s
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ssh-tunnel-{{item.name}}
+
+Environment=PATH=/sbin:/bin:/usr/bin:/usr/local/bin
+
+[Install]
+WantedBy=multi-user.target

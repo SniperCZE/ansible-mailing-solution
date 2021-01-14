@@ -1,0 +1,3 @@
+---
+ansible_ssh_common_args: ""
+#ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q your.bastion.host"'

@@ -1,0 +1,15 @@
+---
+firewall_rules:
+  - group: "via_service_loadbalancers"
+    mangle:
+      - "-A PREROUTING -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff"
+      - "-A INPUT ! -s your.service.lb.ip/32 -m state --state NEW -m mac --mac-source 4A:58:4F:CC:32:74 -j MARK --set-xmark 0x2/0xffffffff"
+      - "-A INPUT -j CONNMARK --save-mark --nfmask 0xffffffff --ctmask 0xffffffff"
+      - "-A INPUT -m state --state RELATED,ESTABLISHED -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff"
+      - "-A OUTPUT -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff"
+
+  - group: "service_loadbalancers"
+    nat:
+      - "-A PREROUTING -p tcp -d your.public.ip.here --dport 25 -j DNAT --to-destination ip.of.smtp.server"
+      - "-A PREROUTING -p tcp -d your.public.ip.here --dport 143 -j DNAT --to-destination ip.of.imap.server"
+

@@ -1,0 +1,14 @@
+---
+# mysql root password
+vault_mysql_root_password: "XXXXXX"
+vault_db_sql_mailman_pass: "kEQJ3bJJ9NkrUpZH"
+vault_db_sql_roundcube_pass: "dLU5n34Ary3sh6LU"
+vault_haproxy_users:
+    - username: "sniper"
+      password: "2WeUwKQgLZY7uj65"
+vault_rspamd_password: "$2$uwioze8k5k7gd9txfggmg6w6gurkd387$xdfagphx75hrn3o5qjnyga7fg1kne3k19tjqy8pm9u8yf9586m3y"
+vault_rspamc_password: "of19aug87SNIP"
+
+vault_dkim_private_key_your_domain: |
+  -----BEGIN RSA PRIVATE KEY-----
+  -----END RSA PRIVATE KEY-----

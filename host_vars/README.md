@@ -1,0 +1,1 @@
+Values related to one target only. Filename must correspond to ansible host name in hosts file (including hypervizor part when lxcssh used)

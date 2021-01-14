@@ -1,0 +1,43 @@
+---
+# list of keys that will be authorized
+ssh_authorized_keys: []
+
+# generate root's private key if missing
+ssh_root_private_key_generated: false
+
+# root's private key
+ssh_root_private_key: None
+
+# in AWS `admin` account is used for logging into system
+ssh_admin_over_root: false
+
+# name of admin account
+ssh_admin: "admin"
+
+# path to admin's home
+ssh_admin_home: "/home/admin"
+
+# list of SSH tunnels
+ssh_tunnels: []
+#  - name: 'mysql-replica'
+#    remote_host: ''
+#    remote_port: 22
+#    remote_user: 'root'
+#    private_key: '/root/.ssh/id_rsa'
+#    local_forwards:
+#      - '13306:127.0.0.1:3306'
+#    remote_forwards:
+#      - '13306:127.0.0.1:3306'
+#    alive_interval: 10
+#    alive_max_count: 3
+
+default_remote_port: 22
+
+default_remote_user: 'root'
+
+default_private_key: '/root/.ssh/id_rsa'
+
+default_alive_interval: 10
+
+default_alive_max_count: 3
+

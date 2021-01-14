@@ -1,0 +1,12 @@
+## This file is written by Ansible
+## On AWS this file is preserved by cloud-init on first boot of an instance as
+## configured in /etc/cloud/cloud.cfg
+
+deb http://httpredir.debian.org/debian {{ansible_lsb.codename}} main contrib non-free
+deb-src http://httpredir.debian.org/debian {{ansible_lsb.codename}} main contrib non-free
+
+## Major bug fix updates produced after the final release of the distribution.
+deb http://security.debian.org/ {{ansible_lsb.codename}}/updates main contrib non-free
+deb-src http://security.debian.org/ {{ansible_lsb.codename}}/updates main contrib non-free
+deb http://httpredir.debian.org/debian {{ansible_lsb.codename}}-updates main contrib non-free
+deb-src http://httpredir.debian.org/debian {{ansible_lsb.codename}}-updates main contrib non-free

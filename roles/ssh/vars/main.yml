@@ -1,0 +1,7 @@
+---
+# owner of generated authorized keys
+ssh_authorized_keys_owner: "root"
+
+# relative path to temporary subdirectory for assembling authorized keys
+ssh_config_path: "/root/.ssh"
+

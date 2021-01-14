@@ -1,0 +1,50 @@
+/var/log/messages
+/var/log/syslog
+{
+  rotate {{rsyslog_log_syslog_rotate}}
+  {{rsyslog_log_syslog_heartbeat}}
+  missingok
+  notifempty
+  {% if not rsyslog_log_syslog_delay_compress %}no{% endif %}delaycompress
+  compress
+  postrotate
+    invoke-rc.d rsyslog rotate > /dev/null
+  endscript
+}
+
+/var/log/daemon.log
+{
+  rotate {{rsyslog_log_daemon_rotate}}
+  {{rsyslog_log_daemon_heartbeat}}
+  missingok
+  notifempty
+  compress
+  {% if not rsyslog_log_daemon_delay_compress %}no{% endif %}delaycompress
+  sharedscripts
+  postrotate
+    invoke-rc.d rsyslog rotate > /dev/null
+  endscript
+}
+
+/var/log/mail.info
+/var/log/mail.warn
+/var/log/mail.err
+/var/log/mail.log
+/var/log/kern.log
+/var/log/auth.log
+/var/log/user.log
+/var/log/lpr.log
+/var/log/cron.log
+/var/log/debug
+{
+  rotate {{rsyslog_log_rotate}}
+  {{rsyslog_log_heartbeat}}
+  missingok
+  notifempty
+  compress
+  {% if not rsyslog_log_delay_compress %}no{% endif %}delaycompress
+  sharedscripts
+  postrotate
+    invoke-rc.d rsyslog rotate > /dev/null
+  endscript
+}

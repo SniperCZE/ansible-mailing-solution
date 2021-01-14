@@ -1,0 +1,4 @@
+---
+- name: restart firewall service
+  service: name="{{firewall_service}}" state=restarted
+
